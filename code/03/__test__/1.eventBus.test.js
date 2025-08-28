@@ -37,6 +37,30 @@ describe('EventBus 发布订阅模式测试', () => {
     expect(onceCallback).toHaveBeenCalledTimes(1);
     expect(onceCallback).toHaveBeenCalledWith('first');
   });
+  test('多次一次性订阅同一个事件，应该每个都触发一次', () => {
+    const onceCallback1 = jest.fn();
+    const onceCallback2 = jest.fn();
+    const onceCallback3 = jest.fn();
+    
+    // 一次性订阅
+    eventBus.once('once-event', onceCallback1);
+    eventBus.once('once-event', onceCallback2);
+    eventBus.once('once-event', onceCallback3);
+    
+    // 第一次发布
+    eventBus.emit('once-event', 'first');
+
+    // 第二次发布
+    eventBus.emit('once-event', 'second');
+    
+    // 验证只被调用一次，且收到第一次的参数
+    expect(onceCallback1).toHaveBeenCalledTimes(1);
+    expect(onceCallback2).toHaveBeenCalledTimes(1);
+    expect(onceCallback3).toHaveBeenCalledTimes(1);
+    expect(onceCallback1).toHaveBeenCalledWith('first');
+    expect(onceCallback2).toHaveBeenCalledWith('first');
+    expect(onceCallback3).toHaveBeenCalledWith('first');
+  });
 
   test('应该能取消订阅', () => {
     const callback = jest.fn();
